@@ -1,0 +1,193 @@
+{
+  "name": "Form Submission",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Welcome Registration Form",
+        "formDescription": "Fill out the form below to receive a welcome email automatically from our n8n workflow.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "Your Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email Address",
+              "fieldType": "email",
+              "placeholder": "example123@gmail.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "✅ Thank you! Your information has been submitted successfully. Please check your inbox for your welcome email."
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -256,
+        -64
+      ],
+      "id": "bf25dea0-562c-4fd6-a138-1250f6da5480",
+      "name": "On form submission",
+      "webhookId": "04a41b85-12a3-4859-b242-078721c2a376",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email Address'] }}",
+        "subject": "Welcome to Our Community!",
+        "message": "=<h2>Hello {{ $json['Full Name'] }},</h2>\n\n<p>Thank you for registering through our n8n form.</p>\n\n<p>We're excited to have you with us!</p>\n\n<p>This email was sent automatically using <strong>n8n Workflow Automation</strong>.</p>\n\n<hr>\n\n<p>Regards,<br>\n<b>Atiq</b></p>",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        -64
+      ],
+      "id": "a92748c0-e75f-4c54-a249-f0073d8983f6",
+      "name": "Send a message",
+      "webhookId": "49ea8da1-0bcb-4100-9899-b89febf629c4",
+      "notesInFlow": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "emDVVwt551Jvo6XI",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_wQ2HDcPwC2S-8ew_FpBDy7cpjDXdLUeWNXidxVedJM",
+          "mode": "list",
+          "cachedResultName": "n8n Form Submission",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_wQ2HDcPwC2S-8ew_FpBDy7cpjDXdLUeWNXidxVedJM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_wQ2HDcPwC2S-8ew_FpBDy7cpjDXdLUeWNXidxVedJM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json['Full Name'] }}",
+            "Email Address": "={{ $json['Email Address'] }}",
+            "Submitted At": "={{ $json.submittedAt }}",
+            "Status": "Welcome Email Send Successfully"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Address",
+              "displayName": "Email Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Submitted At",
+              "displayName": "Submitted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        64
+      ],
+      "id": "06ed7a37-8900-4242-bbdc-bcb930c38533",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "w121iaaOvB5jCuB6",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "235959d3-5e7f-4ae1-bc02-d9c0fa479fe1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fae25c3f902e0c7cba0a5abc5c4c24121ff77d9dece3aeed9871ba3df9058d0"
+  },
+  "nodeGroups": [],
+  "id": "JHCSg0mMp8hflLbn",
+  "tags": []
+}

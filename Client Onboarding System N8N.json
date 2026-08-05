@@ -1,0 +1,544 @@
+{
+  "name": "Client Onboarding System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "TechNova Solutions – Client Onboarding Form",
+        "formDescription": "Welcome! Please complete this form to help us understand your project requirements. Our team will review your submission and get back to you within 24 hours.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email Address",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone Number",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name"
+            },
+            {
+              "fieldLabel": "Project Type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "MERN Stack Web Application"
+                  },
+                  {
+                    "option": "AI Chatbot"
+                  },
+                  {
+                    "option": "AI Voice Assistant"
+                  },
+                  {
+                    "option": "Workflow Automation (n8n)"
+                  },
+                  {
+                    "option": "E-commerce Website"
+                  },
+                  {
+                    "option": "Portfolio Website"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Project Description",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Submit Request",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "🎉 Thank you for your submission! We've received your project details successfully. Our team will review your request, and you'll receive a confirmation email shortly."
+            }
+          }
+        }
+      },
+      "id": "d06136e1-55e0-4fae-95a9-3379578e65d8",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -912,
+        528
+      ],
+      "webhookId": "5c7e8e22-0e07-47d3-8657-90dd94d8f6df"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "141abcbb-7424-4e0d-a0c7-f9385bc99994",
+              "name": "Full Name",
+              "value": "={{ $json['Full Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "d585a7d3-a872-4314-bfa5-3c9882d0dad2",
+              "name": "Email Address",
+              "value": "={{ $json['Email Address'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c295993b-2974-4b2d-9c24-07329bb9d31b",
+              "name": "Phone Number",
+              "value": "={{ $json['Phone Number'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8d4f8885-b3dc-44bf-a321-3f1a407a881a",
+              "name": "Company Name",
+              "value": "={{ $json['Company Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "236b3b30-7b02-49a3-8f5b-81e1d8a04d4e",
+              "name": "Project Type",
+              "value": "={{ $json['Project Type'] }}",
+              "type": "string"
+            },
+            {
+              "id": "dc563270-0cf6-404d-bb71-5fad56d26aed",
+              "name": "Project Description",
+              "value": "={{ $json['Project Description'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6746be4e-5f17-4e02-9932-b915cdf20045",
+              "name": "formMode",
+              "value": "={{ $json.formMode }}",
+              "type": "string"
+            },
+            {
+              "id": "35daf0be-7619-4a67-93e5-a038485cb042",
+              "name": "submittedAt",
+              "value": "={{ $json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ecbf7b1b-b78c-43ae-a5e9-b070f3df1d10",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -672,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "40fe816b-2e65-48d7-bbbc-b8801212b0da",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        512
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "6X6ap45wXVQrc66e",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"subject\": \"string\",\n  \"body\": \"string\"\n}"
+      },
+      "id": "70c25dec-8dd3-4398-9f15-52d348fd8ca7",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -176,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json['Email Address'] }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.body }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "TechNova Solutions"
+        }
+      },
+      "id": "777c1ded-679e-4bca-a61c-3911fe49143e",
+      "name": "Welcome Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        320
+      ],
+      "webhookId": "e5fbfa4d-210c-4981-97c0-6981e67ac50b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YftL35ok8ntfXz5g",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "0c484ea6-7127-477f-b14c-78330e6f5145",
+      "name": "Groq Chat model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        832
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "6X6ap45wXVQrc66e",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1j2sHl90K1ATDdx_wCZprm7u_I4CKugKlVUSrFlmb5zk",
+          "mode": "list",
+          "cachedResultName": "client onboarding system",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1j2sHl90K1ATDdx_wCZprm7u_I4CKugKlVUSrFlmb5zk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1j2sHl90K1ATDdx_wCZprm7u_I4CKugKlVUSrFlmb5zk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json['Full Name'] }}",
+            "Email": "={{ $json['Email Address'] }}",
+            "Number": "={{ $json['Phone Number'] }}",
+            "Company": "={{ $json['Company Name'] }}",
+            "Project Type": "={{ $json['Project Type'] }}",
+            "Project Description": "={{ $json['Project Description'] }}",
+            "Submitted at": "={{ $json.submittedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Project Type",
+              "displayName": "Project Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Project Description",
+              "displayName": "Project Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Submitted at",
+              "displayName": "Submitted at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -672,
+        336
+      ],
+      "id": "b5095f62-61c5-45ca-b9d7-c67b949f2c2a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "NdGjt7QnzXZj9Mpy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json['Email Address'] }}",
+        "subject": "=Your Terms & Service Contract with TechNova Solutions – {{ $('Edit Fields').item.json['Project Type'] }}",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "TechNova Solutions"
+        }
+      },
+      "id": "49de65f3-b951-4339-ba16-dc9f7b1efecf",
+      "name": "Terms & Services Mail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        736
+      ],
+      "webhookId": "8b6984d0-a37e-44c7-a227-a05dbaea3117",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YftL35ok8ntfXz5g",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a professional onboarding email using the following client information.\n\nClient Details\n\nFull Name:\n{{ $json[\"Full Name\"] }}\n\nEmail:\n{{ $json[\"Email Address\"] }}\n\nPhone:\n{{ $json[\"Phone Number\"] }}\n\nCompany:\n{{ $json[\"Company Name\"] }}\n\nProject Type:\n{{ $json[\"Project Type\"] }}\n\nProject Description:\n{{ $json[\"Project Description\"] }}\n\nRequirements:\n\n- Create a professional email subject.\n- Address the client by their first name.\n- Thank them for choosing TechNova Solutions.\n- Confirm that we have successfully received their project request.\n- Include a \"Project Summary\" section.\n- Include their project description.\n- Tell them our team will review the project and contact them within 24–48 business hours.\n- Thank them for trusting TechNova Solutions.\n- End with a professional closing.\n\nReturn ONLY JSON.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a Client Success Manager at TechNova Solutions.\n\nYour responsibility is to generate professional client onboarding emails.\n\nRules:\n- Be professional, friendly, and concise.\n- Address the client by their name {{ $json[\"Full Name\"] }}\n- Thank the client for choosing TechNova Solutions.\n- Confirm that their project inquiry has been successfully received.\n- Mention that our development team will review the requirements.\n- Inform the client that we will contact them within 24–48 business hours.\n- Use a warm and professional tone.\n- Do not use Markdown.\n- Return only valid JSON matching the provided schema. "
+        }
+      },
+      "id": "dc0edbc8-5778-4ff2-b734-10817ab806dd",
+      "name": "Generate Welcome Email",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -320,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=please generate a terms of service and contract document for client  {{ $json['Full Name'] }} from TechNova Solutions. The client operate in company {{ $json['Company Name'] }} and wants a service for {{ $json['Project Type'] }}. The contract should include:\n1. An introduction outlineing the purpose of the contract.\n2. The scope of services.\n3. Payment terms.\n4. Obligation of both parties.\n5. Terms and conditions including liability clauses.\n6. A section for client Signature.\n\nServices provider is always : TechNova Solutions.\nTechNova Solutions owner name is : Atiq Ur Rehman.\nTechNova Solutions phone number is : +92 3427621056.\nTechNova Solutions email is : atiq0046@gmail.com.\n\nGenerate contract with full details by yourself cause we didnot edit it. just return full clear contract with no other text.",
+        "options": {
+          "systemMessage": "You are a legal document assistant at TechNova Solutions. Generate clear, professional terms-of-service and contract documents in plain text. Do not use Markdown formatting. Return only the contract text with no preamble or extra commentary."
+        }
+      },
+      "id": "79c792d6-160e-4453-85dc-93088e5f0481",
+      "name": "Generate Terms & Services",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -304,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Client Input\n\nData Processing\n\nDatabase\n\nAI Email Generation\n\nEmail Delivery",
+        "height": 240,
+        "width": 192,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "0dce9db2-c1b2-48ce-90d9-ac89085153d4",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Generate Terms & Services",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Welcome Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate Welcome Email",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Terms & Services",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Generate Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Terms & Services": {
+      "main": [
+        [
+          {
+            "node": "Terms & Services Mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e2bd1e4c-0cab-4bb2-a5ef-ff162108ed57",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1950f3a36ff21b473c201d948937baf35776222926ba00610aa52f389244e966"
+  },
+  "nodeGroups": [],
+  "id": "xoYAqGVe8FKwm3BH",
+  "tags": [
+    {
+      "updatedAt": "2026-07-27T12:35:05.134Z",
+      "createdAt": "2026-07-27T12:35:05.134Z",
+      "id": "rJd3nAHdzvPrKsf6",
+      "name": "Bootcamp"
+    }
+  ]
+}
