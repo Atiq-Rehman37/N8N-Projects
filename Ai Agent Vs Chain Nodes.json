@@ -1,0 +1,538 @@
+{
+  "updatedAt": "2026-07-21T17:37:43.575Z",
+  "createdAt": "2026-07-21T17:10:45.265Z",
+  "id": "mcy8OlDOudhTGonZ",
+  "name": "Ai Agent Vs Chain Nodes",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -448,
+        -128
+      ],
+      "id": "aec4b54a-7e3b-4680-8d8c-1cd77ca434b6",
+      "name": "When chat message received",
+      "webhookId": "77b28e4e-bdd2-41b6-86e5-77c6e9bcbfb5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7d60043c-90be-4ecb-9afb-10a0059a038d",
+              "leftValue": "={{ $json.chatInput }}",
+              "rightValue": "agent",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -208,
+        -128
+      ],
+      "id": "9fbf817f-df10-44ac-9cdf-17898b01dc99",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI Agent instructor.\n\nExplain AI Agents in simple language.\n\nKeep answers under 150 words.\n\nInclude:\n- What an AI Agent is\n- Why it is useful\n- One practical example"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        176,
+        -208
+      ],
+      "id": "41c57377-8d3c-43b8-8122-903eeff867b6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an n8n instructor.  Explain LLM Chains clearly.  Keep answers under 150 words.  Include: - What an LLM Chain is - When to use it - One practical example"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -272,
+        112
+      ],
+      "id": "2173035d-f42b-4ff5-9a3b-37f0a0ad1467",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        64,
+        0
+      ],
+      "id": "1cb5c463-9866-422e-9505-101a594cb09e",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "q0lru7Rl2I2WQqtC",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        272
+      ],
+      "id": "cd4da345-ab20-41e1-9ad3-68b3090a54f5",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "q0lru7Rl2I2WQqtC",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        272,
+        16
+      ],
+      "id": "c4e98529-ea21-401c-8161-803e9fa69b6a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -16
+      ],
+      "id": "92cea8a8-a299-470a-ae2d-c55684818448",
+      "name": "Wikipedia"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "16413b24-f2ae-4c94-a55a-55f715a63e1c",
+  "activeVersionId": "16413b24-f2ae-4c94-a55a-55f715a63e1c",
+  "versionCounter": 48,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "parentFolder": null,
+  "activeVersion": {
+    "updatedAt": "2026-07-21T17:49:10.000Z",
+    "createdAt": "2026-07-21T17:29:03.939Z",
+    "versionId": "16413b24-f2ae-4c94-a55a-55f715a63e1c",
+    "workflowId": "mcy8OlDOudhTGonZ",
+    "nodes": [
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          -448,
+          -128
+        ],
+        "id": "aec4b54a-7e3b-4680-8d8c-1cd77ca434b6",
+        "name": "When chat message received",
+        "webhookId": "77b28e4e-bdd2-41b6-86e5-77c6e9bcbfb5"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "7d60043c-90be-4ecb-9afb-10a0059a038d",
+                "leftValue": "={{ $json.chatInput }}",
+                "rightValue": "agent",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -208,
+          -128
+        ],
+        "id": "9fbf817f-df10-44ac-9cdf-17898b01dc99",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "options": {
+            "systemMessage": "You are an AI Agent instructor.\n\nExplain AI Agents in simple language.\n\nKeep answers under 150 words.\n\nInclude:\n- What an AI Agent is\n- Why it is useful\n- One practical example"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          176,
+          -208
+        ],
+        "id": "41c57377-8d3c-43b8-8122-903eeff867b6",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "messages": {
+            "messageValues": [
+              {
+                "message": "You are an n8n instructor.  Explain LLM Chains clearly.  Keep answers under 150 words.  Include: - What an LLM Chain is - When to use it - One practical example"
+              }
+            ]
+          },
+          "batching": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.9,
+        "position": [
+          -272,
+          112
+        ],
+        "id": "2173035d-f42b-4ff5-9a3b-37f0a0ad1467",
+        "name": "Basic LLM Chain"
+      },
+      {
+        "parameters": {
+          "model": "llama-3.3-70b-versatile",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+        "typeVersion": 1,
+        "position": [
+          64,
+          0
+        ],
+        "id": "1cb5c463-9866-422e-9505-101a594cb09e",
+        "name": "Groq Chat Model",
+        "credentials": {
+          "groqApi": {
+            "id": "q0lru7Rl2I2WQqtC",
+            "name": "Groq account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "llama-3.1-8b-instant",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+        "typeVersion": 1,
+        "position": [
+          -192,
+          272
+        ],
+        "id": "cd4da345-ab20-41e1-9ad3-68b3090a54f5",
+        "name": "Groq Chat Model1",
+        "credentials": {
+          "groqApi": {
+            "id": "q0lru7Rl2I2WQqtC",
+            "name": "Groq account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.4,
+        "position": [
+          272,
+          16
+        ],
+        "id": "c4e98529-ea21-401c-8161-803e9fa69b6a",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+        "typeVersion": 1,
+        "position": [
+          512,
+          -16
+        ],
+        "id": "92cea8a8-a299-470a-ae2d-c55684818448",
+        "name": "Wikipedia"
+      }
+    ],
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Groq Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Groq Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wikipedia": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Atiq Ur Rehman",
+    "name": "Version 16413b24",
+    "description": "",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-07-21T17:49:10.623Z",
+        "id": 4,
+        "workflowId": "mcy8OlDOudhTGonZ",
+        "versionId": "16413b24-f2ae-4c94-a55a-55f715a63e1c",
+        "event": "activated",
+        "userId": "5c8d6e60-64be-466c-9ea8-4a04c07ffc0a"
+      }
+    ]
+  },
+  "homeProject": {
+    "id": "r3ZAtkTWwLFdicQn",
+    "type": "team",
+    "name": "Bootcamp",
+    "icon": {
+      "type": "icon",
+      "value": "layers"
+    }
+  },
+  "sharedWithProjects": [],
+  "usedCredentials": [
+    {
+      "id": "q0lru7Rl2I2WQqtC",
+      "name": "Groq account",
+      "type": "groqApi",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "r3ZAtkTWwLFdicQn",
+        "type": "team",
+        "name": "Bootcamp",
+        "icon": {
+          "type": "icon",
+          "value": "layers"
+        }
+      },
+      "sharedWithProjects": []
+    }
+  ],
+  "scopes": [
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "checksum": "f7c47a49333669600f03781a7721b5a097cb1a9437325cbec5473d968409dad2"
+}
